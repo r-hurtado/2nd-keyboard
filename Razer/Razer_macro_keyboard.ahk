@@ -19,11 +19,11 @@ SendMode Input
 #WinActivateForce ;https://autohotkey.com/docs/commands/_WinActivateForce.htm ;this may prevent taskbar flashing.
 detecthiddenwindows, on
 Menu, Tray, Icon, shell32.dll, 13 ;turns the tray icon into a computer chip. If you don't like it, choose another: https://github.com/TaranVH/2nd-keyboard/blob/master/INFO_and_PROFILES/system32-shell32_dll.png
-;;#NoTrayIcon ;If you don't want a tray icon, comment this in. Not recommmended! You won't know if it's running or not.
+;;#NoTrayIcon ;If you don't want a tray icon, comment this in. Not recommended! You won't know if it's running or not.
 
 ;________________________________________________________________________________________
 ;                                                                                        
-;     2ND KEYBOARD USING Razer Synapse (and the Blackwidow Chroma, specifially)
+;     2ND KEYBOARD USING Razer Synapse (and the Blackwidow Chroma, specifically)
 ;________________________________________________________________________________________
 ;                                                                                         
 ;     Please watch https://youtu.be/GttedCcyxa4 for a comprehensive tutorial.
@@ -36,7 +36,7 @@ Menu, Tray, Icon, shell32.dll, 13 ;turns the tray icon into a computer chip. If 
 ;; You should probably use something better than Notepad for your scripting. I use Visual Studio Code. 
 
 ;;----------------------------------------------------------------------------
-;;;;;;Receive_WM_COPYDATA RECIEVES MESSAGES AND TURNS THEM INTO FUNCTIONS:;;;;
+;;;;;;Receive_WM_COPYDATA RECEIVES MESSAGES AND TURNS THEM INTO FUNCTIONS:;;;;
 ;;----------------------------------------------------------------------------
 ;;Discussion:https://autohotkey.com/board/topic/18361-anyway-to-pass-params-to-script-while-running/
 ;;Where I got the script from:
@@ -192,7 +192,7 @@ function(par)
 ;;    msgbox, You pressed %par% on your Razer keyboard while inside of Premiere Pro! ;Because of how we had to call our functions, this must be done instead of the traditional #ifwinactive
 ;;else
 ;;    {
-    msgbox, Horray, you pressed`n%par%`n on your Razer keyboard!
+    msgbox, Hooray, you pressed`n%par%`n on your Razer keyboard!
     
 ;;    }
 }
@@ -206,7 +206,7 @@ whateverrr(stuff, things)
 ReloadMe()
 {
     Reload
-    Sleep 1000 ; If the reload is successful, the sleep command will never finish, hence the error handling code below will nver be reached.
+    Sleep 1000 ; If the reload is successful, the sleep command will never finish, hence the error handling code below will never be reached.
     MsgBox, 4,, The script could not be reloaded.
     Return
 }
