@@ -175,7 +175,7 @@ DoSomethingDiff := Var = "EQUALS" ?		function("=")
 	: Var = "macro2" ?		function("macro2")
 	: Var = "macro3" ?		function("macro3")
 	: Var = "macro4" ?		function("macroQuatro")
-	: Var = "macro5" ?		function("macro5")
+	: Var = "macro5" ?		ReloadMe()
 
 ;Now we are at the end.
 return true  ; Returning 1 (true) is the traditional way to acknowledge this message.
@@ -206,7 +206,14 @@ msgbox, %stuff%`nand`n%things%
 
 }
 
-
+; Reloads this script, it beeps
+ReloadMe()
+{
+    Reload
+    Sleep 1000 ; If the reload is successful, the sleep command will never finish, hence the error handling code below will nver be reached.
+    MsgBox, 4,, The script could not be reloaded.
+    Return
+}
 
 ; ^+s::
 ; send ^s
