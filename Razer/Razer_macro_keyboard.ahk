@@ -173,7 +173,7 @@ Receive_WM_COPYDATA(wParam, lParam)
         : Var = "macro1" ?      function("macro1")
         : Var = "macro2" ?      function("macro2")
         : Var = "macro3" ?      function("macro3")
-        : Var = "macro4" ?      function("macroQuatro")
+        : Var = "macro4" ?      InstantExplorer("C:\AHK\2nd-keyboard\Razer")
         : Var = "macro5" ?      ReloadMe()
 
     ;Now we are at the end.
@@ -241,19 +241,236 @@ muteMicDiscord()
     send, #!^+-
 }
 
-; ^+s::
-; send ^s
-; reload
-; return
+; Taran's Instant Explorer function
+; Found on line 399 of https://github.com/TaranVH/2nd-keyboard/blob/master/Almost_All_Windows_Functions.ahk
+InstantExplorer(f_path,pleasePrepend := 0)
+{
+    ;this has been heavily modified from https://autohotkey.com/docs/scripts/FavoriteFolders.htm
+
+    send {SC0E8} ;scan code of an unassigned key. This is needed to prevent the item from merely FLASHING on the task bar, rather than opening the folder. Don't ask me why, but this works.
+
+    ;msgbox, hello
+
+    if pleasePrepend = 1 ;i forget what this is even for...
+        {
+        FileRead, SavedExplorerAddress, C:\AHK\2nd-keyboard\Taran's_Windows_Mods\SavedExplorerAddress.txt
+        ;msgbox, current f_path is %f_path%
+        f_path = %SavedExplorerAddress%\%f_path% ;there is no need to use . to concatenate
+        ;msgbox, new f_path is %f_path%
+        }
+    ;NOTE TO FUTURE TARAN: for Keyshower, put code here to find the first / and remove the string before it. otherwise you can't see the final folder name
+    ;Keyshower(f_path,"InstExplor")
+    if IsFunc("Keyshower") {
+        Func := Func("Keyshower")
+        RetVal := Func.Call(f_path,"InstExplor") 
+    }
+
+    ;;;SUPER IMPORTANT: YOU NEED TO GO INTO FOLDER OPTIONS > VIEW > AND CHECK "DISPLAY THE FULL PATH IN THE TITLE BAR" OR THIS WON'T WORK.
+
+    if !FileExist(f_path)
+    {
+        MsgBox,,, %f_path%`nNo such path exists.,1.7
+        GOTO, instantExplorerEnd
+    }
+
+    f_path := """" . f_path . """" ;this adds quotation marks around everything so that it works as a string, not a variable.
+    ;msgbox, f_path is now finally %f_path%
+    ;SoundBeep, 900, 400 ;this is dumb because you cant change the volume, or tell it NOT to wait while the sound plays...
 
 
+    ; These first few variables are set here and used by f_OpenFavorite:
+    WinGet, f_window_id, ID, A
+    WinGetClass, f_class, ahk_id %f_window_id%
+    WinGetTitle, f_title, ahk_id %f_window_id% ;to be used later to see if this is the export dialogue window in Premiere...
+    if f_class in #32770,ExploreWClass,CabinetWClass  ; if the window class is a save/load dialog, or an Explorer window of either kind.
+        ControlGetPos, f_Edit1Pos, f_Edit1PosY,,, Edit1, ahk_id %f_window_id%
 
 
+        ;edit2
+    /*
+    if f_AlwaysShowMenu = n  ; The menu should be shown only selectively.
+    {
+        if f_class in #32770,ExploreWClass,CabinetWClass  ; Dialog or Explorer.
+        {
+            if f_Edit1Pos =  ; The control doesn't exist, so don't display the menu
+                return
+        }
+        else if f_class <> ConsoleWindowClass
+            return ; Since it's some other window type, don't display menu.
+    }
+    ; Otherwise, the menu should be presented for this type of window:
+    ;Menu, Favorites, show
+    */
 
+    ; msgbox, A_ThisMenuItemPos %A_ThisMenuItemPos%
+    ; msgbox, A_ThisMenuItem %A_ThisMenuItem%
+    ; msgbox, A_ThisMenu %A_ThisMenu%
 
+    ;;StringTrimLeft, f_path, f_path%A_ThisMenuItemPos%, 0
+    ; msgbox, f_path: %f_path%`n f_class:  %f_class%`n f_Edit1Pos:  %f_Edit1Pos%
 
+    ; f_OpenFavorite:
+    ;msgbox, BEFORE:`n f_path: %f_path%`n f_class:  %f_class%`n f_Edit1Pos:  %f_Edit1Pos%
 
+    ; Fetch the array element that corresponds to the selected menu item:
+    ;;StringTrimLeft, f_path, f_path%A_ThisMenuItemPos%, 0
+    if f_path =
+        return
+    if f_class = #32770    ; It's a dialog.
+        {
+        ;msgbox, f_title is %f_title%
+        ; IF f_title is NOT "export settings," with the exe "premiere pro.exe"
+        ;go to the end or do something else, since you are in Premiere's export media dialogue box... which has the same #23770 classNN for some reason...
+        ;msgbox,,,test code E1,0.5
+        if f_title = Export Settings
+            {
+            msgbox,,,you are in Premiere's export window, but NOT in the "Save as" inside of THAT window. no bueno, 1
+            GOTO, instantExplorerEnd 
+            ;return ;no, I don't want to return because i still want to open an explorer window.
+            }
+        if WinActive("ahk_exe Adobe Premiere Pro.exe")
+            {
+            tooltip,you are inside of premieres save as thingy
+            if f_title = Save As or f_title = Save Project ;IDK if this OR is properly nested....
+                {
+                ControlFocus, Edit1, ahk_id %f_window_id% ;this is really important.... it doesn't work if you don't do this...
+                msgbox,,,you are here,0.5
+                tippy2("DIALOGUE WITH PREMIERE'S Edit1`n`nLE controlfocus of Edit1 for f_window_id was just engaged.", 2000)
+                ; msgbox, is it in focus?
+                ; MouseMove, f_Edit1Pos, f_Edit1PosY, 0
+                ; sleep 10
+                ; click
+                ; sleep 10
+                ; msgbox, how about now? x%f_Edit1Pos% y%f_Edit1PosY%
+                ;msgbox, Edit1 has been clicked maybe
+                
+                ; Activate the window so that if the user is middle-clicking
+                ; outside the dialog, subsequent clicks will also work:
+                WinActivate ahk_id %f_window_id%
+                ; Retrieve any filename that might already be in the field so
+                ; that it can be restored after the switch to the new folder:
+                ControlGetText, f_text, Edit1, ahk_id %f_window_id%
+                
+                ControlSetText, Edit1, %f_path%, ahk_id %f_window_id%
+                ControlSend, Edit1, {Enter}, ahk_id %f_window_id%
+                Sleep, 100  ; It needs extra time on some dialogs or in some cases.
+                ControlSetText, Edit1, %f_text%, ahk_id %f_window_id%
+                ;msgbox, AFTER:`n f_path: %f_path%`n f_class:  %f_class%`n f_Edit1Pos:  %f_Edit1Pos%
+                
+                tooltip,
+                return
+                }
+            }
+        ;if WinActive("ahk_exe Adobe Premiere Pro.exe") and f_title = Save Project
+        ; Save As
+        ;OR Save Project
+    ; ahk_class #32770
+    ; ahk_exe Adobe Premiere Pro.exe
+        
+        if f_Edit1Pos <>   ; And it has an Edit1 control.
+            {
 
+            ControlFocus, Edit1, ahk_id %f_window_id% ;this is really important.... it doesn't work if you don't do this...
+            tippy2("DIALOGUE WITH EDIT1`n`nwait really?`n`nLE controlfocus of edit1 for f_window_id was just engaged.", 1000)
+            ; msgbox, is it in focus?
+            ; MouseMove, f_Edit1Pos, f_Edit1PosY, 0
+            ; sleep 10
+            ; click
+            ; sleep 10
+            ; msgbox, how about now? x%f_Edit1Pos% y%f_Edit1PosY%
+            ;msgbox, edit1 has been clicked maybe
+            
+            ; Activate the window so that if the user is middle-clicking
+            ; outside the dialog, subsequent clicks will also work:
+            WinActivate ahk_id %f_window_id%
+            
+            ; Retrieve any filename that might already be in the field so
+            ; that it can be restored after the switch to the new folder:
+            ControlGetText, f_text, Edit1, ahk_id %f_window_id%
+            
+            ControlSetText, Edit1, %f_path%, ahk_id %f_window_id%
+            ControlSend, Edit1, {Enter}, ahk_id %f_window_id%
+            Sleep, 100  ; It needs extra time on some dialogs or in some cases.
+            
+            ;now RESTORE the filename in that text field. I don't like doing it this way...
+            ControlSetText, Edit1, %f_text%, ahk_id %f_window_id%
+            ;msgbox, AFTER:`n f_path: %f_path%`n f_class:  %f_class%`n f_Edit1Pos:  %f_Edit1Pos%
+            
+            ControlFocus, DirectUIHWND2, ahk_id %f_window_id% ;to try to get the focus back into the center area, so you can now type letters and have it go to a file or folder, rather than try to SEARCH or try to change the FILE NAME by default.
+            return
+            }
+        ; else fall through to the bottom of the subroutine to take standard action.
+        }
+
+    ;for some reason, the following code just doesn't work well at all.
+    /*
+    else if f_class in ExploreWClass,CabinetWClass  ; In Explorer, switch folders.
+    {
+        tooltip, f_class is %f_class% and f_window_ID is %f_window_id%
+        if f_Edit1Pos <>   ; And it has an Edit1 control.
+        {
+            Tippy2("EXPLORER WITH EDIT1 only 2 lines of code here....", 1000)
+            ControlSetText, Edit1, %f_path%, ahk_id %f_window_id%
+            msgbox, ControlSetText happened. `nf_class is %f_class% and f_window_ID is %f_window_id%`nAND f_Edit1Pos is %f_Edit1Pos%
+            ; Tekl reported the following: "If I want to change to Folder L:\folder
+            ; then the addressbar shows http://www.L:\folder.com. To solve this,
+            ; I added a {right} before {Enter}":
+            ControlSend, Edit1, {Right}{Enter}, ahk_id %f_window_id%
+            return
+        }
+        ; else fall through to the bottom of the subroutine to take standard action.
+    }
+    */
+
+    else if f_class = ConsoleWindowClass ; In a console window, CD to that directory
+        {
+        WinActivate, ahk_id %f_window_id% ; Because sometimes the mclick deactivates it.
+        SetKeyDelay, 0  ; This will be in effect only for the duration of this thread.
+        IfInString, f_path, :  ; It contains a drive letter
+            {
+            StringLeft, f_path_drive, f_path, 1
+            Send %f_path_drive%:{enter}
+            }
+        Send, cd %f_path%{Enter}
+        return
+        }
+    ending2:
+    ; Since the above didn't return, one of the following is true:
+    ; 1) It's an unsupported window type but f_AlwaysShowMenu is y (yes).
+    ; 2) It's a supported type but it lacks an Edit1 control to facilitate the custom
+    ;    action, so instead do the default action below.
+    Tippy2("end was reached.",333)
+    ;SoundBeep, 800, 300 ;this is nice but the whole damn script WAITS for the sound to finish before it continues...
+    ; Run, Explorer %f_path%  ; Might work on more systems without double quotes.
+
+    ;msgbox, f_path is %f_path%
+
+    ; SplitPath, f_path, , OutDir, , ,
+    ; var := InStr(FileExist(OutDir), "D")
+
+    ; if (var = 0)
+        ; msgbox, directory does not exist
+    ; else if var = 1
+        Run, %f_path%  ; I got rid of the "Explorer" part because it caused redundant windows to be opened, rather than just switching to the existing window
+    ;else
+    ;	msgbox,,,Directory does not exist,1
+
+    instantExplorerEnd:
+
+}
+
+; Required for Tippy2
+notip2:
+	ToolTip,,,,8
+	;removes the tooltip
+return
+
+; Function required for InstantExplorer
+Tippy2(tipsHere, wait:=333)
+{
+    ToolTip, %tipsHere%,,,8
+    SetTimer, notip2, %wait% ;--in 1/3 seconds by default, remove the tooltip
+}
 
 
 
