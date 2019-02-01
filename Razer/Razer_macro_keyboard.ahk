@@ -146,7 +146,7 @@ Receive_WM_COPYDATA(wParam, lParam)
         : Var = "end" ?         function("end")
         : Var = "pageup" ?      function("pgup")
         : Var = "pagedown" ?    function("pgdn")
-        : Var = "up" ?          function("up")
+        : Var = "up" ?          ParentDir()
         : Var = "down" ?        function("down")
         : Var = "left" ?        function("port")
         : Var = "right" ?       function("starboard")
@@ -211,8 +211,6 @@ ReloadMe()
     Return
 }
 
-master_volume = 0
-
 ; Toggles whether the master volume is muted
 volMt()
 {
@@ -229,6 +227,12 @@ volDn()
 volUp()
 {
     SoundSet, +2
+}
+
+; Sends Alt+Up, which changes current directory to its parent
+ParentDir()
+{
+    Send, !{Up}
 }
 
 ; ^+s::
