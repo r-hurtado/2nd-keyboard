@@ -59,9 +59,9 @@ Receive_WM_COPYDATA(wParam, lParam)
     ;AHK does not have a SWITCH case. So this is what we do instead:
     ; https://jacksautohotkeyblog.wordpress.com/2018/11/02/use-the-ternary-operator-to-create-conditional-case-statements-or-switches-autohotkey-tip/#more-40047
     DoSomething := Var = "ESC" ? function("Escape!")
-        : Var = "F1" ?          function("F1")
-        : Var = "F2" ?          function("F2")
-        : Var = "F3" ?          function("F3")
+        : Var = "F1" ?          volMt()
+        : Var = "F2" ?          volDn()
+        : Var = "F3" ?          volUp()
         : Var = "F4" ?          function("F4")
         : Var = "F5" ?          function("F5")
         : Var = "F6" ?          function("F6")
@@ -169,7 +169,7 @@ Receive_WM_COPYDATA(wParam, lParam)
         : Var = "numpad9" ?     whateverrr("this happens when you press numpad9","and this too")
         ;;: Else nope(Var) ;This won't work properly now that it's split in half.
         
-    DoSomethingDiff := Var = "EQUALS" ?        function("=")
+    DoSomethingDiff := Var = "EQUALS" ? function("=")
         : Var = "macro1" ?      function("macro1")
         : Var = "macro2" ?      function("macro2")
         : Var = "macro3" ?      function("macro3")
@@ -209,6 +209,26 @@ ReloadMe()
     Sleep 1000 ; If the reload is successful, the sleep command will never finish, hence the error handling code below will never be reached.
     MsgBox, 4,, The script could not be reloaded.
     Return
+}
+
+master_volume = 0
+
+; Toggles whether the master volume is muted
+volMt()
+{
+    SoundSet, +1, , mute
+}
+
+; Turns the master volume down 2%
+volDn()
+{
+    SoundSet, -2
+}
+
+; Turns the master volume up 2%
+volUp()
+{
+    SoundSet, +2
 }
 
 ; ^+s::
