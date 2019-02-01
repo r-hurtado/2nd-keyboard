@@ -153,7 +153,7 @@ Receive_WM_COPYDATA(wParam, lParam)
         : Var = "NumLock" ?     function("Numlock is awful")
         : Var = "numpadDiv" ?   function("numpadDiv")
         : Var = "numpadMult" ?  function("numpadMult")
-        : Var = "numpadMinus" ? function("numpad-")
+        : Var = "numpadMinus" ? muteMicDiscord()
         : Var = "numpadAdd" ?   function("numpad+")
         : Var = "numpadEnter" ? function("numpadEnter")
         : Var = "numpadDot" ?   function("numpad dot or delete or whatever")
@@ -233,6 +233,12 @@ volUp()
 ParentDir()
 {
     Send, !{Up}
+}
+
+; Send Win+Alt+Ctrl+Shift+- (Minus key) to Discord, toggling whether my mic is muted
+muteMicDiscord()
+{
+    send, #!^+-
 }
 
 ; ^+s::
