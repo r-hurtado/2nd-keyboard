@@ -170,7 +170,7 @@ Receive_WM_COPYDATA(wParam, lParam)
         ;;: Else nope(Var) ;This won't work properly now that it's split in half.
         
     DoSomethingDiff := Var = "EQUALS" ? function("=")
-        : Var = "macro1" ?      function("macro1")
+        : Var = "macro1" ?      MapList()
         : Var = "macro2" ?      function("macro2")
         : Var = "macro3" ?      function("macro3")
         : Var = "macro4" ?      InstantExplorer("C:\AHK\2nd-keyboard\Razer")
@@ -384,22 +384,10 @@ Tippy2(tipsHere, wait:=333)
     SetTimer, notip2, %wait% ;--in 1/3 seconds by default, remove the tooltip
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+; Lists the keys that are mapped and the functions they are mapped to
+MapList()
+{
+    ; Works for now, Looking into making a GUI to help with spacing
+    FileRead, ListStr, C:\AHK\2nd-keyboard\Razer\MapList.txt
+    msgbox, Key      Function`n`n%ListStr%
+}

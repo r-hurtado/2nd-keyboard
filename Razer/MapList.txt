@@ -1,0 +1,7 @@
+F1      Mutes system volume
+F2      Lowers system volume
+F3      Raises system volume
+numpad- Mutes mic in Discord
+M1      Opens this message box
+M4      Opens C:\AHK\2nd-keyboard\Razer, this script's parent directory
+M5      Reloads Script
