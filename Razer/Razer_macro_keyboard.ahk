@@ -387,7 +387,14 @@ Tippy2(tipsHere, wait:=333)
 ; Lists the keys that are mapped and the functions they are mapped to
 MapList()
 {
-    ; Works for now, Looking into making a GUI to help with spacing
     FileRead, ListStr, C:\AHK\2nd-keyboard\Razer\MapList.txt
-    msgbox, Key      Function`n`n%ListStr%
+
+    Gui, MapList:New, ToolWindow, Key Map
+    Gui, Font,, Courier New
+    Gui, Add, Text,, %ListStr%
+    Gui, Add, Button, Default w80 x250 GButtonOK, OK
+    Gui, Show, AutoSize Center
 }
+
+ButtonOK:
+    Gui, Destroy
